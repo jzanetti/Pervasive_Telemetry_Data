@@ -1,0 +1,1 @@
+SITE_TEMPLATE = "https://www.telemetry.net.au/api/v1/sites/{site_id}/samples"
