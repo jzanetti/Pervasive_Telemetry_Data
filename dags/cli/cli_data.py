@@ -32,23 +32,32 @@ def setup_parser():
     return parser.parse_args()
 
 
-def main(workdir: str, cfg: str, api_key: str):
+def main(workdir: str, cfg: str, realtime_flag: bool = False):
     """Main function of data query from Pervasive Telemetry System
 
     Args:
         workdir (str): Working directory
         cfg (str): Configuration for PTS sites
-        api_key (str): API key to be used
     """
     if not exists(workdir):
         makedirs(workdir)
 
-    cfg = read_cfg(cfg)
+    cfg = read_cfg(cfg, realtime_flag)
     for proc_site in cfg["sites"]:
         proc_output = query_data(
-            proc_site, api_key, cfg["start_datetime"], cfg["end_datetime"], cfg["limit"]
+            proc_site,
+            cfg["api_code"],
+            cfg["start_datetime"],
+            cfg["end_datetime"],
+            cfg["limit"],
         )
-        write_outputs(workdir, proc_site, create_table(proc_output))
+        write_outputs(
+            workdir,
+            proc_site,
+            cfg["start_datetime"].strftime("%Y%m%d%H%M"),
+            cfg["end_datetime"].strftime("%Y%m%d%H%M"),
+            create_table(proc_output),
+        )
 
 
 if __name__ == "__main__":

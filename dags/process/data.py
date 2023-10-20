@@ -1,9 +1,10 @@
 from datetime import datetime
+from os import environ
 
-from pandas import DataFrame, concat, json_normalize
+from pandas import DataFrame
 from requests import get as requests_get
 
-from process import SITE_TEMPLATE
+SITE_TEMPLATE = "https://www.telemetry.net.au/api/v1/sites/{site_id}/samples"
 
 
 def query_data(

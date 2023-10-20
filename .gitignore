@@ -1,2 +1,9 @@
 .vscode
 *.pyc
+logs
+*.db
+airflow-webserver.log
+.gitignore
+airflow.db-journal
+airflow-webserver.pid
+cfg.yml
