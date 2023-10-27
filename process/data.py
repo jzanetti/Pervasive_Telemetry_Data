@@ -51,12 +51,14 @@ def query_data(
     return data
 
 
-def create_table(data: dict) -> DataFrame:
+def create_table(data: dict, site_name: str) -> DataFrame:
     sampleDesc = data["sampleDesc"]
     sampleDesc_name = {k: v["name"] for k, v in sampleDesc.items()}
     # sampleDesc_df = DataFrame.from_dict(sampleDesc, orient="index")
 
     samples_df = DataFrame(data["samples"])
     samples_df.rename(columns=sampleDesc_name, inplace=True)
+
+    samples_df["site"] = site_name
 
     return samples_df

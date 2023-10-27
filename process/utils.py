@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from os.path import join
 
-from pandas import DataFrame
+from pandas import concat
 from yaml import safe_load as yaml_load
 
 
@@ -24,10 +24,11 @@ def read_cfg(cfg_path: str, realtime_flag: bool, realtime_interval_hr: int = 6) 
     return cfg
 
 
-def write_outputs(workdir: str, site_name: str, start_t: str, end_t: str, data: DataFrame):
+def write_outputs(workdir: str, start_t: str, end_t: str, all_data: list):
     """Write outputs from DataFrame to csv
 
     Args:
         data (DataFrame): data to be converted
     """
-    data.to_csv(join(workdir, f"outputs_{site_name}_{start_t}_{end_t}.csv"), index=False)
+    df = concat(all_data)
+    df.to_csv(join(workdir, f"outputs_{start_t}_{end_t}.csv"), index=False)

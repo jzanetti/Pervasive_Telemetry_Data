@@ -8,9 +8,9 @@ from process.utils import read_cfg, write_outputs
 
 def get_example_usage():
     example_text = """example:
-        * cli_data --workdir /tmp/pts
-                   --cfg pts_sites.cfg
-                   --api_key xxxxx123
+        * start_ptd --workdir /tmp/pts
+                    --cfg pts_sites.cfg
+                    [--realtime_flag]
         """
     return example_text
 
@@ -27,22 +27,31 @@ def setup_parser():
     )
 
     parser.add_argument("--cfg", required=True, help="Configuration path")
-    parser.add_argument("--api_key", required=True, help="API key value")
+    parser.add_argument("--realtime_flag", action="store_true", help="If run the task in realtime")
 
-    return parser.parse_args()
+    return parser.parse_args(
+        # ["--workdir", "/tmp/pts", "--cfg", "cfg.yml", "--realtime_flag"]
+    )
 
 
-def main(workdir: str, cfg: str, realtime_flag: bool = False):
+def main():
     """Main function of data query from Pervasive Telemetry System
 
     Args:
         workdir (str): Working directory
         cfg (str): Configuration for PTS sites
     """
+    args = setup_parser()
+    workdir = args.workdir
+    cfg = args.cfg
+    realtime_flag = args.realtime_flag
+
     if not exists(workdir):
         makedirs(workdir)
 
     cfg = read_cfg(cfg, realtime_flag)
+
+    all_outputs = []
     for proc_site in cfg["sites"]:
         proc_output = query_data(
             proc_site,
@@ -51,15 +60,16 @@ def main(workdir: str, cfg: str, realtime_flag: bool = False):
             cfg["end_datetime"],
             cfg["limit"],
         )
-        write_outputs(
-            workdir,
-            proc_site,
-            cfg["start_datetime"].strftime("%Y%m%d%H%M"),
-            cfg["end_datetime"].strftime("%Y%m%d%H%M"),
-            create_table(proc_output),
-        )
+
+        all_outputs.append(create_table(proc_output, proc_site))
+
+    write_outputs(
+        workdir,
+        cfg["start_datetime"].strftime("%Y%m%d%H%M"),
+        cfg["end_datetime"].strftime("%Y%m%d%H%M"),
+        all_outputs,
+    )
 
 
 if __name__ == "__main__":
-    args = setup_parser()
-    main(args.workdir, args.cfg, args.api_key)
+    main()
