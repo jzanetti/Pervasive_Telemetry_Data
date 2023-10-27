@@ -7,3 +7,4 @@ airflow-webserver.log
 airflow.db-journal
 airflow-webserver.pid
 cfg.yml
+*.log
