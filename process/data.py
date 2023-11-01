@@ -54,10 +54,17 @@ def query_data(
 def create_table(data: dict, site_name: str) -> DataFrame:
     sampleDesc = data["sampleDesc"]
     sampleDesc_name = {k: v["name"] for k, v in sampleDesc.items()}
+    sampleDesc_unit = {k: v["units"] for k, v in sampleDesc.items()}
     # sampleDesc_df = DataFrame.from_dict(sampleDesc, orient="index")
 
+    combined_dict = {
+        key: f"{sampleDesc_name[key]} {sampleDesc_unit[key]}".rstrip()
+        for key in sampleDesc_name
+        if key in sampleDesc_unit
+    }
+
     samples_df = DataFrame(data["samples"])
-    samples_df.rename(columns=sampleDesc_name, inplace=True)
+    samples_df.rename(columns=combined_dict, inplace=True)
 
     samples_df["site"] = site_name
 
